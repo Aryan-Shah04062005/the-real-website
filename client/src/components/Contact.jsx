@@ -18,7 +18,7 @@ const Contact = () => {
     
     try {
       // Point to your local backend
-      await axios.post('https://disabilities-bias-strips-suggests.trycloudflare.com/api/contacts', formData);
+      await axios.post('https://the-real-backend.onrender.com/api/contacts', formData);
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
       setTimeout(() => setStatus('idle'), 5000);
