@@ -161,7 +161,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Contact Form
+    // Contact Form Logic
+    const contactForm = document.querySelector('.contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = contactForm.querySelector('button');
+            const originalBtnText = submitBtn.innerText;
+            
+            // Get data
+            const formData = {
+                name: contactForm.querySelector('input[type="text"]').value,
+                email: contactForm.querySelector('input[type="email"]').value,
+                subject: 'Website Inquiry',
+                message: contactForm.querySelector('textarea').value
+            };
+
+            try {
+                submitBtn.innerText = 'Sending...';
+                submitBtn.disabled = true;
+
+                const response = await fetch('http://localhost:5001/api/contacts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Message Sent Successfully!');
+                    contactForm.reset();
+                } else {
+                    throw new Error('Failed to send');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error: Make sure the server is running on port 5001!');
+            } finally {
+                submitBtn.innerText = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // Contact Form Animation
     gsap.from('.contact-form', {
         scrollTrigger: {
             trigger: '.contact-section',
