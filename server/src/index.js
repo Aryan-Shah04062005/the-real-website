@@ -39,7 +39,10 @@ app.get('/', (req, res) => {
 
 // Database Connection
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/the-real';
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error('❌ CRITICAL ERROR: MONGO_URI is not defined in environment variables!');
+}
 
 mongoose.connect(MONGO_URI)
   .then(() => {
