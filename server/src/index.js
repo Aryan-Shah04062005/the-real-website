@@ -43,14 +43,15 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/the-real';
 
 mongoose.connect(MONGO_URI)
   .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+    console.log('✅ Connected to MongoDB');
   })
   .catch(err => {
-    console.error('Database connection error:', err);
+    console.error('❌ Database connection error:', err);
   });
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
 
 // Error Handling
 app.use((err, req, res, next) => {
