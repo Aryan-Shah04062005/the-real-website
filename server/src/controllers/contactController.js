@@ -2,7 +2,9 @@ const Contact = require('../models/Contact');
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // Use SSL
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -62,7 +64,7 @@ exports.submitContact = async (req, res) => {
     res.status(500).json({ 
       error: 'Failed to process message', 
       details: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+      code: error.code
     });
   }
 };
