@@ -2,16 +2,27 @@ const Contact = require('../models/Contact');
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE,
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
 
+// Verify transporter connection on startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.log('❌ Email Server Error:', error);
+  } else {
+    console.log('✅ Email Server is ready to take messages');
+  }
+});
+
 exports.submitContact = async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
+    
+    // 1. Save to Database
     const contact = await Contact.create({ 
       name, 
       email, 
@@ -20,21 +31,35 @@ exports.submitContact = async (req, res) => {
       ipAddress: req.ip 
     });
 
-    // Send notification email
+    // 2. Prepare Email
     const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER, // Send to self
-      subject: `New Contact Submission: ${subject || 'Website Inquiry'}`,
-      text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+      from: `"The Real Website" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      replyTo: email,
+      subject: `🚀 New Contact: ${subject || 'Inquiry'} from ${name}`,
+      text: `New message from ${name} (${email}):\n\n${message}`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; color: #333;">
+          <h2>New Contact Form Submission</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject || 'N/A'}</p>
+          <p><strong>Message:</strong></p>
+          <div style="background: #f4f4f4; padding: 15px; border-left: 4px solid #333;">
+            ${message}
+          </div>
+        </div>
+      `,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) console.log('Email error:', error);
-    });
+    // 3. Send Email
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Email sent successfully to ${process.env.EMAIL_USER}`);
 
     res.status(201).json({ message: 'Message sent successfully' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('❌ Contact Submission Error:', error);
+    res.status(500).json({ error: 'Failed to process message' });
   }
 };
 
