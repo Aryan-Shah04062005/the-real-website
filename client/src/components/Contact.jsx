@@ -107,7 +107,7 @@ const Contact = () => {
                   )}
                 </button>
                 {status === 'error' && (
-                  <p className="text-red-500 text-sm mt-4 text-center">Failed to send message. Is the server running?</p>
+                  <p className="text-red-500 text-sm mt-4 text-center">Failed to send message. Please check the cloud server.</p>
                 )}
               </div>
             </form>

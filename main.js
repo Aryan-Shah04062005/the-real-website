@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (err) {
                 console.error(err);
-                alert('Error: Make sure the server is running on port 5001!');
+                alert('Error: Could not connect to the cloud server. Please check your internet connection.');
             } finally {
                 submitBtn.innerText = originalBtnText;
                 submitBtn.disabled = false;
