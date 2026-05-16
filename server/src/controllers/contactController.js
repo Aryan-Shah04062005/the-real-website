@@ -59,7 +59,11 @@ exports.submitContact = async (req, res) => {
     res.status(201).json({ message: 'Message sent successfully' });
   } catch (error) {
     console.error('❌ Contact Submission Error:', error);
-    res.status(500).json({ error: 'Failed to process message' });
+    res.status(500).json({ 
+      error: 'Failed to process message', 
+      details: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+    });
   }
 };
 
