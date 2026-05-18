@@ -1,11 +1,25 @@
 const Contact = require('../models/Contact');
 const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend;
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+} else {
+  console.warn('⚠️ WARNING: RESEND_API_KEY is not defined. Email sending will fail, but the server will remain active.');
+}
 
 exports.submitContact = async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
+
+    if (!resend) {
+      console.error('❌ Cannot send email: RESEND_API_KEY is missing.');
+      // Still save to database so the message isn't lost!
+      await Contact.create({ name, email, subject, message, ipAddress: req.ip });
+      return res.status(201).json({ 
+        message: 'Message saved to database, but email notification skipped due to missing API Key.' 
+      });
+    }
 
     // 1. Save to Database
     await Contact.create({
