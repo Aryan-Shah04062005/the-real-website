@@ -44,13 +44,17 @@ if (!MONGO_URI) {
   console.error('❌ CRITICAL ERROR: MONGO_URI is not defined in environment variables!');
 }
 
-mongoose.connect(MONGO_URI)
-  .then(() => {
-    console.log('✅ Connected to MongoDB');
-  })
-  .catch(err => {
-    console.error('❌ Database connection error:', err);
-  });
+if (MONGO_URI) {
+  mongoose.connect(MONGO_URI)
+    .then(() => {
+      console.log('✅ Connected to MongoDB');
+    })
+    .catch(err => {
+      console.error('❌ Database connection error:', err);
+    });
+} else {
+  console.error('⚠️ Skipping MongoDB connection because MONGO_URI is not defined.');
+}
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
